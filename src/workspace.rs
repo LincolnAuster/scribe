@@ -3,6 +3,7 @@
 use buffer::Buffer;
 use errors::*;
 use std::io;
+use std::fs::OpenOptions;
 use std::path::{Path, PathBuf};
 use syntect::parsing::{SyntaxDefinition, SyntaxSet};
 
@@ -98,6 +99,13 @@ impl Workspace {
     /// workspace.open_buffer(file_path.clone());
     /// ```
     pub fn open_buffer(&mut self, path: &Path) -> io::Result<()> {
+        self.open_buffer_with_opts(path, OpenOptions::new().read(true).write(true))
+    }
+
+    /// Similar to `open_buffer`, but allow specifying custom file options.
+    pub fn open_buffer_with_opts(
+        &mut self, path: &Path, opts: &mut OpenOptions,
+    ) -> io::Result<()> {
         if self.contains_buffer_with_path(path) {
             // We already have this buffer in the workspace.
             // Loop through the buffers until it's selected.
@@ -117,7 +125,7 @@ impl Workspace {
             // Not going to run into IO errors if we're not opening a buffer.
             Ok(())
         } else {
-            let buffer = try!(Buffer::from_file(path));
+            let buffer = try!(Buffer::from_file_with_opts(path, opts));
             self.add_buffer(buffer);
 
             Ok(())
