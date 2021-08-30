@@ -30,7 +30,7 @@ use errors::*;
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::default::Default;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::io;
 use std::io::{Read, Write};
 use std::mem;
@@ -116,8 +116,15 @@ impl Buffer {
     /// # assert_eq!(buffer.cursor.offset, 0);
     /// ```
     pub fn from_file(path: &Path) -> io::Result<Buffer> {
+        Self::from_file_with_opts(path, &mut OpenOptions::new().read(true))
+    }
+
+    /// Like `from_file`, but allow custom OpenOptions.
+    pub fn from_file_with_opts(
+        path: &Path, opts: &mut OpenOptions
+    ) -> io::Result<Buffer> {
         // Try to open and read the file, returning any errors encountered.
-        let mut file = File::open(path)?;
+        let mut file = opts.open(path)?;
         let mut data = String::new();
         file.read_to_string(&mut data)?;
 
