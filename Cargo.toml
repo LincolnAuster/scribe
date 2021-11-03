@@ -17,6 +17,8 @@ unicode-segmentation = "~1.0.1"
 error-chain = "0.10.0"
 
 [dependencies.syntect]
+git = "https://github.com/lincolnauster/syntect-but-old"
+branch = "old-dep"
 version = "~2.1.0"
 default-features = false
 features = ["html", "dump-load" ]
